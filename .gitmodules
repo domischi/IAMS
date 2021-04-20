@@ -1,0 +1,3 @@
+[submodule "projects/simulators/SpringBox"]
+	path = projects/simulators/SpringBox
+	url = https://github.com/domischi/SpringBox
