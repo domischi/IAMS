@@ -1,3 +1,6 @@
 [submodule "projects/simulators/SpringBox"]
 	path = projects/simulators/SpringBox
 	url = https://github.com/domischi/SpringBox
+[submodule "projects/simulators/SpringBoxMixing"]
+	path = projects/simulators/SpringBoxMixing
+	url = https://github.com/domischi/SpringBoxDDPG
