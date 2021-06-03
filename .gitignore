@@ -1,3 +1,8 @@
+# Ignore temporary files
 __pycache__
 *.swp
 venv
+
+# Ignore secret files
+.env
+
