@@ -1,4 +1,4 @@
-Integrated Active Matter
+Integrated Active Matter Simulations (IAMS)
 
 Goal:
 Coordinate all numerical experiments of the Thomson Lab into one framework. In particular, we want to 
