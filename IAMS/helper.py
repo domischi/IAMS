@@ -3,6 +3,7 @@ from copy import deepcopy
 import logging
 import itertools
 import random
+import numpy as np
 
 DEFAULT_QUEUE_LOCATION = './queue.json'
 
@@ -33,7 +34,14 @@ def explode_to_individual_sims(global_sim_parameters, PRESERVE_ORIGINAL=True):
 def repeated_simulations(sims, n):
     return [item for sublist in itertools.repeat(sims,n) for item in sublist]
 
+def replace_ndarray_w_list(l_of_experiments):
+    for sim in l_of_experiments:
+        for q in sim:
+            if type(sim[q])==np.ndarray:
+                sim[q] = sim[q].tolist()
+
 def write_queued_experiments(l_of_experiments, queue_file_location = DEFAULT_QUEUE_LOCATION):
+    replace_ndarray_w_list(l_of_experiments)
     with open(queue_file_location, 'w') as f:
         json.dump(l_of_experiments, f, indent=4, sort_keys=True)
 
