@@ -1,3 +1,5 @@
+import sacred
+from pprint import pprint
 import json
 from copy import deepcopy
 import logging
@@ -5,7 +7,7 @@ import itertools
 import random
 import numpy as np
 
-DEFAULT_QUEUE_LOCATION = './queue.json'
+DEFAULT_QUEUE_LOCATION = 'queue.json'
 
 def extended_sim_dicts_to_simplified(in_sims, PRESERVE_ORIGINAL=True):
     sims=explode_to_individual_sims(in_sims, PRESERVE_ORIGINAL=PRESERVE_ORIGINAL)
@@ -45,19 +47,17 @@ def write_queued_experiments(l_of_experiments, queue_file_location = DEFAULT_QUE
     with open(queue_file_location, 'w') as f:
         json.dump(l_of_experiments, f, indent=4, sort_keys=True)
 
-def get_number_of_queued_experiments(queue_file_location=DEFAULT_QUEUE_LOCATION):
-    with open(queue_file_location, 'r') as f:
-        l = len(json.load(f))
-    return l
-
-def get_ith_simulation(i, queue_file_location = DEFAULT_QUEUE_LOCATION):
+def get_queued_experiments(queue_file_location = DEFAULT_QUEUE_LOCATION):
     with open(queue_file_location, 'r') as f:
         l = json.load(f)
-    try:
-        return l[i]
-    except IndexError:
-        logging.error(f"Asked for experiment {i} out of {get_number_of_queued_experiments(loc_dir=loc_dir)}... Aborting")
-        raise IndexError
+    return l
+
+def get_number_of_queued_experiments(queue_file_location=DEFAULT_QUEUE_LOCATION):
+    return len(get_queued_experiments(queue_file_location))
+
+def get_ith_simulation(i, queue_file_location = DEFAULT_QUEUE_LOCATION):
+    sims = get_queued_experiments(queue_file_location)
+    return sims[i]
 
 def random_selection_of_experiments(sims, max_number=None, fraction=None):
     if max_number is None and fraction is None:
@@ -71,4 +71,3 @@ def random_selection_of_experiments(sims, max_number=None, fraction=None):
             max_number = max([max_number, mn])
     max_number = min([max_number, len(sims)]) ## Can't do more than len of simulations
     return random.sample(sims, max_number)
-
