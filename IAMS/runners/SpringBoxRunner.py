@@ -8,11 +8,11 @@ import sacred
 import numba
 import warnings
 warnings.simplefilter('ignore', category=numba.NumbaWarning)
-import SpringBox
-from SpringBox.integrator import integrate_one_timestep
-from SpringBox.activation import activation_fn_dispatcher
-from SpringBox.post_run_hooks import post_run_hooks
-from SpringBox.measurements import do_measurements, do_one_timestep_correlation_measurement
+import IAMS.simulators.SpringBox.SpringBox as SB
+from IAMS.simulators.SpringBox.SpringBox.integrator import integrate_one_timestep
+from IAMS.simulators.SpringBox.SpringBox.activation import activation_fn_dispatcher
+from IAMS.simulators.SpringBox.SpringBox.post_run_hooks import post_run_hooks
+from IAMS.simulators.SpringBox.SpringBox.measurements import do_measurements, do_one_timestep_correlation_measurement
 import dask
 from dask.distributed import Client
 import uuid
@@ -21,7 +21,7 @@ ex = sacred.Experiment()
 #ex.observers.append(sacred.observers.FileStorageObserver('data'))
 #ex.observers.append(sacred.observers.S3Observer(bucket='active-matter-simulations',
 #                               basedir='SpringBox'))
-ex.dependencies.add(sacred.dependencies.PackageDependency("SpringBox",SpringBox.__version__))
+ex.dependencies.add(sacred.dependencies.PackageDependency("SpringBox",SB.__version__))
 
 def do_local_storage():
     for obs in ex.observers:
