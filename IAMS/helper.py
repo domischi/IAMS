@@ -1,3 +1,4 @@
+import boto3
 import sacred
 from pprint import pprint
 import json
