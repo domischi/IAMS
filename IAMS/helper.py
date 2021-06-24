@@ -71,3 +71,12 @@ def random_selection_of_experiments(sims, max_number=None, fraction=None):
             max_number = max([max_number, mn])
     max_number = min([max_number, len(sims)]) ## Can't do more than len of simulations
     return random.sample(sims, max_number)
+
+def download_generic_from_s3(bucket, folder, file_name, file_name_local = None):
+    if file_name_local is None:
+        file_name_local = file_name
+    s3 = boto3.client('s3')
+    s3.download_file(bucket, f'{folder}/{file_name}', file_name_local)
+
+def download_queue_from_s3(fname, bucket='active-matter-simulations', folder = 'queue-files'):
+    download_generic_from_s3(bucket, folder, fname, 'queue.json')
