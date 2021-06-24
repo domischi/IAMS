@@ -16,11 +16,10 @@ from IAMS.simulators.SpringBox.SpringBox.measurements import do_measurements, do
 import dask
 from dask.distributed import Client
 import uuid
+import boto3
+from ..helper import DEFAULT_QUEUE_LOCATION, write_queued_experiments, upload_queue_to_s3, get_number_of_queued_experiments
 
 ex = sacred.Experiment()
-#ex.observers.append(sacred.observers.FileStorageObserver('data'))
-#ex.observers.append(sacred.observers.S3Observer(bucket='active-matter-simulations',
-#                               basedir='SpringBox'))
 ex.dependencies.add(sacred.dependencies.PackageDependency("SpringBox",SB.__version__))
 
 def do_local_storage(folder_modifier=None):
@@ -157,7 +156,6 @@ def run_all_dask_local(sim_list, n_tasks, **kwargs):
         lazy_results.append(dask.delayed(run_one(sim, **kwargs)))
     dask.compute(*lazy_results)
 
-from ..helper import DEFAULT_QUEUE_LOCATION, write_queued_experiments
 def run_all_dask_local_from_json(n_tasks, queue_file=DEFAULT_QUEUE_LOCATION, **kwargs):
     from ..helper import get_queued_experiments
     run_all_dask_local(get_queued_experiments(queue_file), n_tasks, **kwargs)
@@ -237,3 +235,20 @@ def upload_and_run_on_cluster(uid, username, run_on_scratch=True, scratch_loc = 
     print('Close connection...', end='')
     os.system(f"""ssh -O exit -o ControlPath="./%L-%r@%h:%p" {username}@login.hpc.caltech.edu""")
     print('Done')
+
+def upload_and_run_on_AWS(queue_name):
+    print('Upload queue to S3...', end='')
+    uid = upload_queue_to_s3(queue_name)
+    print('Done.')
+
+    print(f'Submit job {uid}...', end='')
+    import boto3
+    client = boto3.client('batch')
+    client.submit_job(
+            jobName = uid,
+            arrayProperties = {'size':get_number_of_queued_experiments(queue_name)},
+            jobQueue = 'iams',
+            jobDefinition = 'iams',
+            containerOverrides = {'environment' : [{'name':'queue-fname' , 'value':uid+'.json'}]}
+            )
+    print('Done.')

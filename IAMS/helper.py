@@ -1,4 +1,5 @@
 import boto3
+import uuid
 import sacred
 from pprint import pprint
 import json
@@ -80,4 +81,15 @@ def download_generic_from_s3(bucket, folder, file_name, file_name_local = None):
     s3.download_file(bucket, f'{folder}/{file_name}', file_name_local)
 
 def download_queue_from_s3(fname, bucket='active-matter-simulations', folder = 'queue-files'):
-    download_generic_from_s3(bucket, folder, fname, 'queue.json')
+    download_generic_from_s3(bucket, folder, fname)
+
+def upload_generic_to_s3(bucket, folder, file_name, file_name_local = None):
+    if file_name_local is None:
+        file_name_local = file_name
+    s3 = boto3.client('s3')
+    s3.upload_file(file_name_local, bucket, f'{folder}/{file_name}')
+
+def upload_queue_to_s3(fname, bucket='active-matter-simulations', folder = 'queue-files'):
+    uid = str(uuid.uuid4())
+    upload_generic_to_s3(bucket, folder, uid+'.json', file_name_local=fname)
+    return uid
