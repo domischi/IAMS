@@ -134,9 +134,12 @@ def main(_config, _run):
     post_run_hooks(ex, _config, _run, data_dir)
 
 
-def run_one(sim):
+def run_one(sim, do_local=True, do_S3=False):
     from IAMS.runners.SpringBoxRunner import ex, do_local_storage, do_s3_storage
-    do_local_storage()
+    if do_local:
+        do_local_storage()
+    if do_S3:
+        do_s3_storage()
     ex.run(config_updates=sim, options={'--force': True})
 
 def run_all_dask_local(sim_list, n_tasks):
