@@ -23,17 +23,23 @@ ex = sacred.Experiment()
 #                               basedir='SpringBox'))
 ex.dependencies.add(sacred.dependencies.PackageDependency("SpringBox",SB.__version__))
 
-def do_local_storage():
+def do_local_storage(folder_modifier=None):
     for obs in ex.observers:
         if type(obs)==sacred.observers.FileStorageObserver:
             return
-    ex.observers.append(sacred.observers.FileStorageObserver('data'))
+    folder = 'data'
+    if not folder_modifier is None:
+        folder+=f'/{folder_modifier}'
+    ex.observers.append(sacred.observers.FileStorageObserver(folder))
 
-def do_s3_storage(region='us-west-2'):
+def do_s3_storage(region='us-west-2', folder_modifier=None):
     for obs in ex.observers:
         if type(obs)==sacred.observers.S3Observer:
             return
-    ex.observers.append(sacred.observers.S3Observer(bucket='active-matter-simulations',
+    bucket = 'active-matter-simulations' 
+    if not folder_modifier is None:
+        bucket+=f'/{folder_modifier}'
+    ex.observers.append(sacred.observers.S3Observer(bucket=bucket,
                                    basedir='SpringBox', region=region))
 
 @ex.config
@@ -134,12 +140,12 @@ def main(_config, _run):
     post_run_hooks(ex, _config, _run, data_dir)
 
 
-def run_one(sim, do_local=True, do_S3=False):
+def run_one(sim, do_local=True, do_S3=False, folder_modifier=None):
     from IAMS.runners.SpringBoxRunner import ex, do_local_storage, do_s3_storage
     if do_local:
-        do_local_storage()
+        do_local_storage(folder_modifier=folder_modifier)
     if do_S3:
-        do_s3_storage()
+        do_s3_storage(folder_modifier=folder_modifier)
     ex.run(config_updates=sim, options={'--force': True})
 
 def run_all_dask_local(sim_list, n_tasks, **kwargs):
