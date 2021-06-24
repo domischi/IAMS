@@ -29,12 +29,12 @@ def do_local_storage():
             return
     ex.observers.append(sacred.observers.FileStorageObserver('data'))
 
-def do_s3_storage():
+def do_s3_storage(region='us-west-2'):
     for obs in ex.observers:
         if type(obs)==sacred.observers.S3Observer:
             return
     ex.observers.append(sacred.observers.S3Observer(bucket='active-matter-simulations',
-                                   basedir='SpringBox'))
+                                   basedir='SpringBox', region=region))
 
 @ex.config
 def cfg():
@@ -142,17 +142,17 @@ def run_one(sim, do_local=True, do_S3=False):
         do_s3_storage()
     ex.run(config_updates=sim, options={'--force': True})
 
-def run_all_dask_local(sim_list, n_tasks):
+def run_all_dask_local(sim_list, n_tasks, **kwargs):
     lazy_results = []
     client = Client(threads_per_worker=1, n_workers = n_tasks)
     for sim in sim_list:
-        lazy_results.append(dask.delayed(run_one(sim)))
+        lazy_results.append(dask.delayed(run_one(sim, **kwargs)))
     dask.compute(*lazy_results)
 
 from ..helper import DEFAULT_QUEUE_LOCATION, write_queued_experiments
-def run_all_dask_local_from_json(n_tasks, queue_file=DEFAULT_QUEUE_LOCATION):
+def run_all_dask_local_from_json(n_tasks, queue_file=DEFAULT_QUEUE_LOCATION, **kwargs):
     from ..helper import get_queued_experiments
-    run_all_dask_local(get_queued_experiments(queue_file), n_tasks)
+    run_all_dask_local(get_queued_experiments(queue_file), n_tasks, **kwargs)
 
 def get_slurm_script(user, time, num_sims, user_email=None):
     if user_email is None:
