@@ -36,9 +36,10 @@ def do_s3_storage(region='us-west-2', folder_modifier=None):
     for obs in ex.observers:
         if type(obs)==sacred.observers.S3Observer:
             return
-    bucket = 'active-matter-simulations' 
+    bucket = 'iams' 
     if not folder_modifier is None:
         bucket+=f'/{folder_modifier}'
+        print(bucket)
     ex.observers.append(sacred.observers.S3Observer(bucket=bucket,
                                    basedir='SpringBox', region=region))
 
