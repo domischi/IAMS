@@ -29,7 +29,7 @@ def do_local_storage(folder_modifier=None):
             return
     folder = 'data'
     if not folder_modifier is None:
-        folder+=f'/{folder_modifier}'
+        folder+=f'.{folder_modifier}'
     ex.observers.append(sacred.observers.FileStorageObserver(folder))
 
 def do_s3_storage(region='us-west-2', folder_modifier=None):
