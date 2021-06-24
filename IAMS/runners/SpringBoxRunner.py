@@ -29,7 +29,7 @@ def do_local_storage(folder_modifier=None):
             return
     folder = 'data'
     if not folder_modifier is None:
-        folder+=f'.{folder_modifier}'
+        folder+=f'/{folder_modifier}'
     ex.observers.append(sacred.observers.FileStorageObserver(folder))
 
 def do_s3_storage(region='us-west-2', folder_modifier=None):
@@ -38,7 +38,7 @@ def do_s3_storage(region='us-west-2', folder_modifier=None):
             return
     bucket = 'iams' 
     if not folder_modifier is None:
-        bucket+=f'/{folder_modifier}'
+        bucket+=f'.{folder_modifier}'
         print(bucket)
     ex.observers.append(sacred.observers.S3Observer(bucket=bucket,
                                    basedir='SpringBox', region=region))
