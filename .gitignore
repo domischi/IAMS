@@ -5,4 +5,4 @@ venv
 
 # Ignore secret files
 .env
-
+ECR_LINK
