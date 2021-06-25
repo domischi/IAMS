@@ -11,43 +11,64 @@ import numpy as np
 
 DEFAULT_QUEUE_LOCATION = 'queue.json'
 
-def extended_sim_dicts_to_simplified(in_sims, PRESERVE_ORIGINAL=True):
-    sims=explode_to_individual_sims(in_sims, PRESERVE_ORIGINAL=PRESERVE_ORIGINAL)
-    for sim in sims:
-        for k in sim:
-            sim[k]=sim[k]['value']
-    return sims
-
-def explode_to_individual_sims(global_sim_parameters, PRESERVE_ORIGINAL=True):
+def convert_iterate_over_to_nested_lists(l_in, PRESERVE_ORIGINAL=True):
     if PRESERVE_ORIGINAL:
-        sim_file=deepcopy(global_sim_parameters)
+        l_out=deepcopy(l_in)
     else:
-        sim_file=global_sim_parameters
-    for i, sim in enumerate(sim_file):
-        for parameter_name, parameter_dict in sim.items():
-            if parameter_dict.get('iterate_over', False):
-                for val in parameter_dict['value']:
-                    new_parameter_dict = {'value': val}
-                    new_sim = deepcopy(sim)
-                    new_sim[parameter_name]=new_parameter_dict
-                    sim_file.append(new_sim)
-                del sim_file[i]
-                return explode_to_individual_sims(sim_file, PRESERVE_ORIGINAL=False)
-    return sim_file
+        l_out=l_in
+    if type(l_out)==list:
+        return [convert_iterate_over_to_nested_lists(l) for l in l_out]
+    if type(l_out)==dict :
+        if all([type(v) == dict for v in l_out.values()]):
+            for k in l_out:
+                if not 'iterate_over' in l_out[k]:
+                    l_out[k] = l_out[k]['value']
+        for k in l_out:
+            if type(l_out[k]) == dict and 'iterate_over' in l_out[k]:
+                l = []
+                for v in l_out[k]['value']:
+                    sim = deepcopy(l_out)
+                    sim[k]=v
+                    l.append(sim)
+                return convert_iterate_over_to_nested_lists(l) ## possibly have to still expand underlying lists
+        ## No more to expand, can return the original list
+        return l_out
+    else:
+        return l_out
+
+def flatten_nested_list(x):
+    result = []
+    for el in x:
+        if type(el) == list:
+            result.extend(flatten_nested_list(el))
+        else:
+            result.append(el)
+    return result
+
+def extended_sim_dicts_to_simplified(global_sim_parameters, PRESERVE_ORIGINAL=True):
+    nested_list = convert_iterate_over_to_nested_lists(global_sim_parameters, PRESERVE_ORIGINAL=PRESERVE_ORIGINAL)
+    return flatten_nested_list(nested_list)
+
 
 def repeated_simulations(sims, n):
     return [item for sublist in itertools.repeat(sims,n) for item in sublist]
 
-def replace_ndarray_w_list(l_of_experiments):
-    for sim in l_of_experiments:
-        for q in sim:
-            if type(sim[q])==np.ndarray:
-                sim[q] = sim[q].tolist()
+def replace_ndarray_w_list(sims):
+    if type(sims)==list:
+        return [replace_ndarray_w_list(l) for l in sims]
+    if type(sims)==dict:
+        return {replace_ndarray_w_list(k):replace_ndarray_w_list(v) for k,v in sims.items()}
+    if type(sims)==np.ndarray:
+        return [replace_ndarray_w_list(r) for r in sims]
+    if type(sims)==np.int64:
+        return int(sims)
+    else:
+        return sims
 
 def write_queued_experiments(l_of_experiments, queue_file_location = DEFAULT_QUEUE_LOCATION):
-    replace_ndarray_w_list(l_of_experiments)
+    l = replace_ndarray_w_list(l_of_experiments)
     with open(queue_file_location, 'w') as f:
-        json.dump(l_of_experiments, f, indent=4, sort_keys=True)
+        json.dump(l, f, indent=4, sort_keys=True)
 
 def get_queued_experiments(queue_file_location = DEFAULT_QUEUE_LOCATION):
     with open(queue_file_location, 'r') as f:

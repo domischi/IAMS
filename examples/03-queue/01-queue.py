@@ -36,5 +36,9 @@ sim_parameters = [
     'spring_cutoff' :{'value': L}, # Always have a same average of particles that interact},
     }
     ]
+
+## Write simple queue file
+h.write_queued_experiments(sim_parameters, queue_file_location='queue-orig.json')
+## Convert into standard format & Save it in the simulation packaged way
 sim_parameters = h.extended_sim_dicts_to_simplified(sim_parameters)
 h.write_queued_experiments(sim_parameters)
