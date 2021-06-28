@@ -5,22 +5,6 @@ import IAMS.helper as h
 import json
 from sim_tree import *
 
-
-class sim_list_item(
-    Qt.QStandardItem
-):  ## Either a simulation, or a grid-search simulation
-    def __init__(self, txt, sim):
-        super().__init__()
-        self.setEditable(False)
-        self.setText(txt)
-        if type(sim) == list:
-            self.sim = None
-        elif type(sim) == dict:
-            self.sim = sim  # TODO currently there is no way of assesing this data
-        else:
-            raise RuntimeError
-
-
 class main_window(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -133,20 +117,6 @@ class main_window(QtWidgets.QMainWindow):
     def exit(self):
         print("in exit")
         self.close()
-
-
-def expand_node(s, node, modifier=""):
-    if type(s) == dict:
-        node.appendRow(sim_list_item(f"Sim {modifier[:-1]}", s))
-    if type(s) == list:
-        if len(s) == 1:
-            expand_node(s[0], node, modifier=modifier)
-        else:
-            node2 = sim_list_item(f"Sims {modifier[:-1]}", s)
-            for i, ss in enumerate(s):
-                expand_node(ss, node2, modifier=modifier + f"{i+1}.")
-            node.appendRow(node2)
-
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
