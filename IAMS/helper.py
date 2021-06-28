@@ -11,6 +11,13 @@ import numpy as np
 
 DEFAULT_QUEUE_LOCATION = 'queue.json'
 
+def contains_iterate_over(d):
+    assert(type(d)==dict)
+    for v in d.values():
+        if type(v) == dict and 'iterate_over' in d:
+            return True
+    return False
+
 def convert_iterate_over_to_nested_lists(l_in, PRESERVE_ORIGINAL=True):
     if PRESERVE_ORIGINAL:
         l_out=deepcopy(l_in)
