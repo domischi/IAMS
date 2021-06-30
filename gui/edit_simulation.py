@@ -17,8 +17,10 @@ class edit_simulation_window(QtWidgets.QDialog):
 
         if sim_name is not None:
             self.findChild(QtWidgets.QGroupBox, "gb_simulation_listing").setTitle("Simulation "+sim_name)
+            self.setWindowTitle("Edit Simulation "+sim_name+"...")
         else:
             self.findChild(QtWidgets.QGroupBox, "gb_simulation_listing").setTitle("Unspecified Simulation")
+            self.setWindowTitle("Add new Simulation...")
 
         ## Save original simulation and a working copy
         self.orig_sim = deepcopy(sim)
