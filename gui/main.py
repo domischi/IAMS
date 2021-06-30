@@ -6,6 +6,8 @@ import json
 from sim_tree import *
 from edit_simulation import edit_simulation_window
 
+DEFAULT_SIM_DICT = dict()
+
 class main_window(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -119,7 +121,15 @@ class main_window(QtWidgets.QMainWindow):
         self.update_sim_details()
 
     def add_simulations(self):
-        print("in add_simulations")
+        if self.selected_sim_name is None or self.selected_sim_name == "":
+            data_now = DEFAULT_SIM_DICT
+        else:
+            data_now = self.sim_tree.get_data_by_name(self.selected_sim_name) ## Use currently selected simulation as starting point
+        new_sim, non_empty = edit_simulation_window.get_edited_simulation(sim=data_now)
+        if non_empty:
+            self.sim_tree.insert_below_name(self.selected_sim_name, new_sim)
+            self.rebuild_sim_tree()
+        #self.update_sim_details() ## TODO implement that this works
 
     def exit(self):
         print("in exit")
