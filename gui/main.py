@@ -116,6 +116,7 @@ class main_window(QtWidgets.QMainWindow):
                 self.sim_tree.replace_sim_by_name(self.selected_sim_name, edited_sim)
                 if any([isinstance(val, dict) and val.get("iterate_over", False) for val in edited_sim.values()]):
                     self.rebuild_sim_tree()
+        self.update_sim_details()
 
     def add_simulations(self):
         print("in add_simulations")
