@@ -1,5 +1,5 @@
 from pprint import pprint, pformat
-from PyQt5 import Qt, QtGui, QtWidgets, uic
+from PyQt5 import Qt, QtGui, QtWidgets, uic, QtCore
 import sys
 import IAMS.helper as h
 import json
@@ -96,6 +96,11 @@ class main_window(QtWidgets.QMainWindow):
         self.simulation_list_tree_view.selectionModel().selectionChanged.connect(self.update_sim_details)
         self.simulation_list_tree_view.activated.connect(self.edit_simulations)
 
+    def update_selection(self, sim_name):
+        qmodelindex_of_sim = self.simulation_list_tree_view.model().findItems(sim_name, QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)[0].index()
+        self.simulation_list_tree_view.setCurrentIndex(qmodelindex_of_sim)
+
+
     def update_sim_details(self):
         clicked_sim_name = self.simulation_list_tree_view.selectedIndexes()[0].data()
         self.selected_sim_name = clicked_sim_name
@@ -129,9 +134,9 @@ class main_window(QtWidgets.QMainWindow):
             data_now = self.sim_tree.get_data_by_name(self.selected_sim_name) ## Use currently selected simulation as starting point
         new_sim, non_empty = edit_simulation_window.get_edited_simulation(sim=data_now)
         if non_empty:
-            self.sim_tree.insert_below_name(self.selected_sim_name, new_sim)
+            new_name = self.sim_tree.insert_below_name(self.selected_sim_name, new_sim)
             self.rebuild_sim_tree()
-        #self.update_sim_details() ## TODO implement that this works
+            self.update_selection(new_name) ## selects new element in treeview and should also update sim details
 
     def exit(self):
         print("in exit")

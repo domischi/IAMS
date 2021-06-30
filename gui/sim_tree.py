@@ -107,9 +107,12 @@ class sim_tree_node:
         if name == self.name:
             new_tree = sim_tree_node(new_sim, parent=self, index = len(self.children)+1) ## TODO with better naming convention -> fix this as it could lead to double usage of same name when items are added and deleted
             self.children.append(new_tree)
+            return new_tree.name
         else:
             for c in self.children:
-                c.insert_below_name(name, new_sim)
+                ret_val = c.insert_below_name(name, new_sim)
+                if ret_val is not None: 
+                    return ret_val
 
     def __str__(self):
         s = "Sim"
