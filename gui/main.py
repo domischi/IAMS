@@ -32,7 +32,6 @@ class main_window(QtWidgets.QMainWindow):
             QtWidgets.QTreeView, "SimulationTreeView"
         )
         self.simulation_list_tree_view.setHeaderHidden(True)
-        self.simulation_list_tree_view.clicked.connect(self.update_sim_details)
 
         self.last_saved_to = None
         self.unsaved_changes = False
@@ -93,6 +92,9 @@ class main_window(QtWidgets.QMainWindow):
         tm = self.sim_tree.get_pyqt_tree_model()
         self.simulation_list_tree_view.setModel(tm)
         self.simulation_list_tree_view.expandAll()
+        # These connections have to be redone after every change in the tree, and only after the tree has been loaded
+        self.simulation_list_tree_view.selectionModel().selectionChanged.connect(self.update_sim_details)
+        self.simulation_list_tree_view.activated.connect(self.edit_simulations)
 
     def update_sim_details(self):
         clicked_sim_name = self.simulation_list_tree_view.selectedIndexes()[0].data()
