@@ -4,6 +4,7 @@ import sys
 import IAMS.helper as h
 import json
 from sim_tree import *
+from edit_simulation import edit_simulation_window
 
 class main_window(QtWidgets.QMainWindow):
     def __init__(self):
@@ -20,7 +21,6 @@ class main_window(QtWidgets.QMainWindow):
         self.findChild(QtWidgets.QPushButton, "button_edit_sims").clicked.connect(
             self.edit_simulations
         )
-        self.findChild(QtWidgets.QLabel, "SelectedSimInfo")
         self.actionOpen.triggered.connect(self.load_simulations)
         self.actionSave.triggered.connect(self.save_simulations)
         self.actionSave_As.triggered.connect(self.save_simulations_as)
@@ -109,7 +109,13 @@ class main_window(QtWidgets.QMainWindow):
         print("in run_simulations")
 
     def edit_simulations(self):
-        print("in edit_simulations")
+        data_now = self.sim_tree.get_data_by_name(self.selected_sim_name)
+        if isinstance(data_now, dict): ## Can only edit structured simulations
+            edited_sim, changed = edit_simulation_window.get_edited_simulation(data_now, self.selected_sim_name)
+            if changed:
+                self.sim_tree.replace_sim_by_name(self.selected_sim_name, edited_sim)
+                if any([isinstance(val, dict) and val.get("iterate_over", False) for val in edited_sim.values()]):
+                    self.rebuild_sim_tree()
 
     def add_simulations(self):
         print("in add_simulations")

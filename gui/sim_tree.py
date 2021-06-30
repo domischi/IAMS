@@ -93,6 +93,14 @@ class sim_tree_node:
                 if data is not None:
                     return data
         return None
+    def replace_sim_by_name(self, name, new_sim):
+        if name == self.name:
+            new_tree = sim_tree_node(new_sim, parent=self.parent)
+            self.__dict__.update( new_tree.__dict__)  ## Overwrite oneself with new simulation
+            self.name = name ## Because name get's overwritten with something unintelligible by the line above
+        else:
+            for c in self.children:
+                c.replace_sim_by_name(name, new_sim)
 
     def __str__(self):
         s = "Sim"
