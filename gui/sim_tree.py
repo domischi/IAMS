@@ -14,14 +14,18 @@ class sim_tree_node_PyQt(Qt.QStandardItem):
 
 
 class sim_tree_node:
-    def __init__(self, list_or_dict=None, parent=None, index=None):
+    def __init__(self, list_or_dict=None, parent=None, index=None, nameHint = None):
         self.parent = parent
         self.children = []
-        self.name = (
-            (self.parent.name if self.parent is not None else "")
-            + ("." if self.parent is not None and self.parent.name != "" else "")
-            + (str(index) if index is not None else "")
-        )
+        self.nameHint = nameHint
+        if nameHint is None:
+            self.name = (
+                (self.parent.name if self.parent is not None else "")
+                + ("." if self.parent is not None and self.parent.name != "" else "")
+                + (str(index) if index is not None else "")
+            )
+        else:
+            self.name = self.nameHint
 
         if list_or_dict is None:
             self.data = None
@@ -30,7 +34,7 @@ class sim_tree_node:
             self.data = deepcopy(list_or_dict)
             self.is_multiple_simulations = self.contains_iterate_over()
             if self.is_multiple_simulations:
-                self.expand_data()
+                self.name += ' '+self.expand_data()
         elif isinstance(list_or_dict, list):
             self.children = [
                 sim_tree_node(e, self, index=i + 1) for i, e in enumerate(list_or_dict)
@@ -59,7 +63,16 @@ class sim_tree_node:
         for i, val in enumerate(self.data[iterate_over_key]["value"]):
             sim_dir = deepcopy(self.data)
             sim_dir[iterate_over_key] = val
-            self.children.append(sim_tree_node(sim_dir, parent=self, index=i + 1))
+            if self.nameHint is not None:
+                name_hint = f"{self.nameHint}, {iterate_over_key}={val}"
+            else:
+                name_hint = f"{iterate_over_key}={val}"
+            self.children.append(sim_tree_node(sim_dir, parent=self, index=i + 1, nameHint = name_hint))
+
+        min_val = min(self.data[iterate_over_key]['value'])
+        max_val = max(self.data[iterate_over_key]['value'])
+        s = iterate_over_key + f" [{min_val}, {max_val}]"
+        return s
 
     def load_json_into_node(self, json_path):
         assert json_path.endswith(".json")
@@ -95,17 +108,44 @@ class sim_tree_node:
         return None
     def replace_sim_by_name(self, name, new_sim):
         if name == self.name:
-            new_tree = sim_tree_node(new_sim, parent=self.parent)
+            new_tree = sim_tree_node(new_sim, parent=self.parent, nameHint=self.nameHint)
             self.__dict__.update( new_tree.__dict__)  ## Overwrite oneself with new simulation
-            self.name = name ## Because name get's overwritten with something unintelligible by the line above
         else:
             for c in self.children:
                 c.replace_sim_by_name(name, new_sim)
+
+    @staticmethod
+    def get_full_name_hint_from_dict(d):
+        assert(isinstance(d, dict))
+        s=""
+        for k, v in d.items():
+            if not (isinstance(v, dict) and v.get("iterate_over", False)):
+                s+=f"{k}={v}, "
+        for k, v in d.items():
+            if isinstance(v, dict) and v.get("iterate_over", False):
+                min_val = min(v["value"])
+                max_val = max(v["value"])
+                s+=f"{k} [{min_value}, {max_value}], "
+        return s[:-2]
+
+    def insert_at_name(self, name, new_sim):
+        if name is None: ## Handle insert on root level
+            name=""
+        if name == self.name:
+            name_hint = sim_tree_node.get_full_name_hint_from_dict(new_sim)
+            new_tree = sim_tree_node(new_sim, parent=self.parent, index = len(self.children)+1, nameHint=name_hint) ##TODO fix simhint to not be ambiguous
+            self.parent.children.append(new_tree)
+            return new_tree.name
+        else:
+            for c in self.children:
+                ret_val = c.insert_at_name(name, new_sim)
+                if ret_val is not None: 
+                    return ret_val
     def insert_below_name(self, name, new_sim):
         if name is None: ## Handle insert on root level
             name=""
         if name == self.name:
-            new_tree = sim_tree_node(new_sim, parent=self, index = len(self.children)+1) ## TODO with better naming convention -> fix this as it could lead to double usage of same name when items are added and deleted
+            new_tree = sim_tree_node(new_sim, parent=self, index = len(self.children)+1, nameHint=self.nameHint)
             self.children.append(new_tree)
             return new_tree.name
         else:

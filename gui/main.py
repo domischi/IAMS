@@ -102,7 +102,11 @@ class main_window(QtWidgets.QMainWindow):
 
 
     def update_sim_details(self):
-        clicked_sim_name = self.simulation_list_tree_view.selectedIndexes()[0].data()
+        try:
+            clicked_sim_name = self.simulation_list_tree_view.selectedIndexes()[0].data()
+        except:
+            print("Didn't find a clicked sim name, ignoring it" )
+            return
         self.selected_sim_name = clicked_sim_name
         sim_data = self.sim_tree.get_data_by_name(clicked_sim_name)
         txt = "(No valid selection)"
@@ -134,7 +138,7 @@ class main_window(QtWidgets.QMainWindow):
             data_now = self.sim_tree.get_data_by_name(self.selected_sim_name) ## Use currently selected simulation as starting point
         new_sim, non_empty = edit_simulation_window.get_edited_simulation(sim=data_now)
         if non_empty:
-            new_name = self.sim_tree.insert_below_name(self.selected_sim_name, new_sim)
+            new_name = self.sim_tree.insert_at_name(self.selected_sim_name, new_sim)
             self.rebuild_sim_tree()
             self.update_selection(new_name) ## selects new element in treeview and should also update sim details
 
