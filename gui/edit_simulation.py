@@ -83,12 +83,15 @@ class edit_simulation_window(QtWidgets.QDialog):
         gl = self.findChild(QtWidgets.QGridLayout, "gl_parameters")
         for i in range(1,gl.rowCount()): ## Start at 1 because 0 is headers
             key = gl.itemAtPosition(i, 2).widget().text()
-            val = eval(gl.itemAtPosition(i,3).widget().text())
+            val = gl.itemAtPosition(i,3).widget().text()
+            try:
+                val = eval(val)
+            except NameError: ## Understand val now as string because it cannot be evaluated as python code
+                val = str(val)
             iterate_over = gl.itemAtPosition(i,1).takeAt(0).widget().isChecked()
             if iterate_over and not hasattr(val, "__iter__"):
                 iterate_over = False
                 raise RuntimeWarning("Want to iterate over something that isn't iterable. Overwriting the iterate_over parameter!")
-                
             if iterate_over:
                 d[key] = {'iterate_over':True, 'value': val}
             else:
