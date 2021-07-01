@@ -26,10 +26,8 @@ class main_window(QtWidgets.QMainWindow):
         self.findChild(QtWidgets.QPushButton, "button_edit_sims").clicked.connect(
             self.edit_simulations
         )
-        self.actionOpen.setShortcut('Ctrl+O')
         self.actionOpen.triggered.connect(self.load_simulations)
         self.actionSave.triggered.connect(self.save_simulations)
-        self.actionSave.setShortcut('Ctrl+S')
         self.actionSave_As.triggered.connect(self.save_simulations_as)
         self.actionSave_Queue_File.triggered.connect(self.save_flattened_simulations_as)
         self.actionExit.triggered.connect(self.exit)
@@ -43,8 +41,22 @@ class main_window(QtWidgets.QMainWindow):
         self.selected_sim_name = None
         self.unsaved_changes = False
         self.standard_window_title = self.windowTitle()
-        self.load_file("tmp.simtree")
 
+        ## Define keyboard shortcuts
+        # Remove simulations
+        QtWidgets.QShortcut('Del', self).activated.connect(self.remove_simulations)
+        QtWidgets.QShortcut('Backspace', self).activated.connect(self.remove_simulations)
+        QtWidgets.QShortcut('-', self).activated.connect(self.remove_simulations)
+        # Add simulations
+        QtWidgets.QShortcut('+', self).activated.connect(self.add_simulations)
+        # Save flattened simulations
+        self.actionSave_Queue_File.setShortcut('Ctrl+Shift+S')
+        # Save simulation tree
+        self.actionSave.setShortcut('Ctrl+S')
+        # Open simulation tree
+        self.actionOpen.setShortcut('Ctrl+O')
+
+        self.load_file("tmp.simtree")
 
     def set_unsaved_changes(self, flag=True):
         if flag:
@@ -190,9 +202,10 @@ class main_window(QtWidgets.QMainWindow):
             self.update_selection(new_name) ## selects new element in treeview and should also update sim details
             self.set_unsaved_changes(True)
     def remove_simulations(self):
-        self.sim_tree.remove_sim_by_name(self.selected_sim_name)
-        self.rebuild_sim_tree()
-        self.set_unsaved_changes(True)
+        if self.selected_sim_name is not None:
+            self.sim_tree.remove_sim_by_name(self.selected_sim_name)
+            self.rebuild_sim_tree()
+            self.set_unsaved_changes(True)
     def closeEvent(self, evt): # Requires overwrite in order to ensure program terminates via exit (asking user for confirmation of save)
         self.exit()
     def exit(self):
