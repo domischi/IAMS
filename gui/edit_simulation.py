@@ -65,7 +65,6 @@ class edit_simulation_window(QtWidgets.QDialog):
         gl.addWidget(name_line_edit  , insert_row_number , 2)
         gl.addWidget(value_line_edit , insert_row_number , 3)
     def remove_parameter_row(self, i):
-        print(f'in remove parameter row {i=}')
         gl = self.findChild(QtWidgets.QGridLayout, "gl_parameters")
         gl.itemAtPosition(i,0).widget().deleteLater()
         gl.itemAtPosition(i,1).takeAt(0).widget().deleteLater()
@@ -82,7 +81,10 @@ class edit_simulation_window(QtWidgets.QDialog):
         d = dict()
         gl = self.findChild(QtWidgets.QGridLayout, "gl_parameters")
         for i in range(1,gl.rowCount()): ## Start at 1 because 0 is headers
-            key = gl.itemAtPosition(i, 2).widget().text()
+            key_slot = gl.itemAtPosition(i, 2)
+            if key_slot is None: ## Deleted row -> doesn't contain any data -> can be skipped
+                continue
+            key = key_slot.widget().text()
             val = gl.itemAtPosition(i,3).widget().text()
             try:
                 val = eval(val)
