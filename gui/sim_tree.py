@@ -26,6 +26,8 @@ class sim_tree_node:
             )
         else:
             self.name = self.nameHint
+        if self.name == "": ## Root list
+            self.name = "Simulations"
 
         if list_or_dict is None:
             self.data = None
@@ -37,7 +39,7 @@ class sim_tree_node:
                 self.name += ' '+self.expand_data()
         elif isinstance(list_or_dict, list):
             self.children = [
-                sim_tree_node(e, self, index=i + 1) for i, e in enumerate(list_or_dict)
+                sim_tree_node(e, self, index=i + 1, nameHint=f"{i+1}") for i, e in enumerate(list_or_dict)
             ]
             self.data = deepcopy(list_or_dict)
             self.is_multiple_simulations = True
