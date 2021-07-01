@@ -56,7 +56,27 @@
       <item>
        <widget class="QPushButton" name="button_add_sims">
         <property name="text">
-         <string>Add Simulation(s)</string>
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_remove_sims">
+        <property name="text">
+         <string>Remove</string>
         </property>
        </widget>
       </item>
@@ -76,7 +96,7 @@
       <item>
        <widget class="QPushButton" name="button_edit_sims">
         <property name="text">
-         <string>Edit Simulation(s)</string>
+         <string>Edit</string>
         </property>
        </widget>
       </item>
@@ -96,7 +116,7 @@
       <item>
        <widget class="QPushButton" name="button_run_sims">
         <property name="text">
-         <string>Run Simulations</string>
+         <string>Run</string>
         </property>
        </widget>
       </item>

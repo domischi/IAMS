@@ -14,6 +14,9 @@ class main_window(QtWidgets.QMainWindow):
         uic.loadUi("main.ui", self)
         self.show()
         self.sim_tree = sim_tree_node()
+        self.findChild(QtWidgets.QPushButton, "button_remove_sims").clicked.connect(
+            self.remove_simulations
+        )
         self.findChild(QtWidgets.QPushButton, "button_add_sims").clicked.connect(
             self.add_simulations
         )
@@ -186,6 +189,10 @@ class main_window(QtWidgets.QMainWindow):
             self.rebuild_sim_tree()
             self.update_selection(new_name) ## selects new element in treeview and should also update sim details
             self.set_unsaved_changes(True)
+    def remove_simulations(self):
+        self.sim_tree.remove_sim_by_name(self.selected_sim_name)
+        self.rebuild_sim_tree()
+        self.set_unsaved_changes(True)
     def closeEvent(self, evt): # Requires overwrite in order to ensure program terminates via exit (asking user for confirmation of save)
         self.exit()
     def exit(self):

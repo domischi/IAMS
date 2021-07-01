@@ -150,6 +150,10 @@ class sim_tree_node:
         else:
             for c in self.children:
                 c.replace_sim_by_name(name, new_sim)
+    def remove_sim_by_name(self, name):
+        self.children = [c for c in self.children if c.name != name]
+        for c in self.children:
+            c.remove_sim_by_name(name)
 
     @staticmethod
     def get_full_name_hint_from_dict(d):
