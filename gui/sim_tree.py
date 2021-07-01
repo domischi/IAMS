@@ -12,6 +12,14 @@ class sim_tree_node_PyQt(Qt.QStandardItem):
         self.setEditable(False)
         self.setText(txt)
 
+class sim_tree_node_encoder(json.JSONEncoder):
+    def default(self, o):
+        if hasattr(o, 'reprJSON'): ## Handle sim tree
+            return o.reprJSON()
+        elif isinstance(o, np.ndarray): ## Handle sim tree
+            return o.tolist()
+        else:
+            return json.JSONEncoder.default(self, o)
 
 class sim_tree_node:
     def __init__(self, list_or_dict=None, parent=None, index=None, nameHint = None):
@@ -76,7 +84,7 @@ class sim_tree_node:
         s = iterate_over_key + f" [{min_val}, {max_val}]"
         return s
 
-    def load_json_into_node(self, json_path):
+    def load_json_into_node(self, json_path): ## Assumes a script generated queue file
         assert json_path.endswith(".json")
         with open(json_path, "r") as f:
             l = json.load(f)
@@ -85,9 +93,36 @@ class sim_tree_node:
             new_tree.__dict__
         )  ## This is a massive cheat, but apparently works to replace the current self with a new self
 
-    def save_json_of_children(self, json_path, flatten=True):
-        if self.is_multiple_simulations and not flatten:
-            raise RuntimeError("Cannot store json of non-flattened simulations")
+
+    def reprJSON(self):
+        return  {
+                    'parent'                  : None, # Has to be redone in loading
+                    'data'                    : self.data,
+                    'name'                    : self.name,
+                    'is_multiple_simulations' : self.is_multiple_simulations,
+                    'children'                : [c.reprJSON() for c in self.children],
+                    'nameHint'                : self.nameHint,
+                }
+    def save_sim_tree_to_json(self, sim_tree_dump_path):
+        d = self.__dict__
+        with open(sim_tree_dump_path, 'w') as f:
+            json.dump(d,f, indent=4,  cls=sim_tree_node_encoder)
+    def load_from_dict(self, d, parent=None):
+        self.parent = parent
+        self.data = d['data']
+        self.name = d.get('name', '')
+        self.nameHint = d['nameHint']
+        self.is_multiple_simulations = d['is_multiple_simulations']
+        self.children = [sim_tree_node().load_from_dict(dd, parent=self) for dd in d['children']]
+        return self
+    def load_sim_tree_from_json(self, sim_tree_dump_path):
+        assert(sim_tree_dump_path.endswith('.simtree'))
+        with open(sim_tree_dump_path, 'r') as f:
+            d = json.load(f)
+        self.load_from_dict(d)
+
+
+    def save_flattened_json_of_children(self, json_path):
         l = self.flattened_simulations()
         write_queued_experiments(l, json_path)
 

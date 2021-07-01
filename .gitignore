@@ -10,3 +10,4 @@ ECR_LINK
 # Ignore work files and templates in gui
 gui/*_v*.ui
 gui/*.json
+gui/*.simtree
