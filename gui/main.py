@@ -23,8 +23,10 @@ class main_window(QtWidgets.QMainWindow):
         self.findChild(QtWidgets.QPushButton, "button_edit_sims").clicked.connect(
             self.edit_simulations
         )
+        self.actionOpen.setShortcut('Ctrl+O')
         self.actionOpen.triggered.connect(self.load_simulations)
         self.actionSave.triggered.connect(self.save_simulations)
+        self.actionSave.setShortcut('Ctrl+S')
         self.actionSave_As.triggered.connect(self.save_simulations_as)
         self.actionSave_Queue_File.triggered.connect(self.save_flattened_simulations_as)
         self.actionExit.triggered.connect(self.exit)
