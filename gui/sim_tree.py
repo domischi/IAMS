@@ -64,6 +64,9 @@ class sim_tree_node:
         return False
 
     def expand_data(self):
+        for k, v in self.data.items():
+            if isinstance(v, dict) and not v.get("iterate_over", False): ## Handle non-iterate over dicts
+                self.data[k] = v["value"]
         iterate_over_key = None
         for k, v in self.data.items():
             if isinstance(v, dict) and v.get("iterate_over", False):
