@@ -5,6 +5,7 @@ import IAMS.helper as h
 import json
 from sim_tree import *
 from edit_simulation import edit_simulation_window
+from run_simulation import run_simulation_window
 
 DEFAULT_SIM_DICT = dict()
 
@@ -176,8 +177,7 @@ class main_window(QtWidgets.QMainWindow):
     def run_simulations(self):
         if self.unsaved_changes:
             self.save_simulations()
-        print("in run_simulations")
-        raise NotImplementedError
+        sim_status = run_simulation_window(sims=self.sim_tree)
 
     def edit_simulations(self):
         data_now = self.sim_tree.get_data_by_name(self.selected_sim_name)
