@@ -153,7 +153,8 @@ def run_all_dask_local(sim_list, n_tasks, **kwargs):
     lazy_results = []
     client = Client(threads_per_worker=1, n_workers = n_tasks)
     for sim in sim_list:
-        lazy_results.append(dask.delayed(run_one(sim, **kwargs)))
+        print('here')
+        lazy_results.append(dask.delayed(run_one)(sim, **kwargs))
     dask.compute(*lazy_results)
 
 def run_all_dask_local_from_json(n_tasks, queue_file=DEFAULT_QUEUE_LOCATION, **kwargs):
