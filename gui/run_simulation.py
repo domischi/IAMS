@@ -102,8 +102,13 @@ class run_simulation_window(QtWidgets.QDialog):
 
     def run_aws(self):
         fname = str(uuid.uuid4())+'.json'
-        write_queued_experiments(self.sim_list, fname)
-        upload_and_run_on_AWS(fname)
+        try:
+            write_queued_experiments(self.sim_list, fname)
+            upload_and_run_on_AWS(fname)
+        except NoCredentialsError:
+            QtWidgets.QMessageBox.information(self, "Error!", f"It appears that you don't have the credentials set to access the AWS Batch cluster. Make sure you have the .aws folder set and you have working credentials. Once you've done this, restart the program.", QtWidgets.QMessageBox.Ok)
+            self.close()
+
         os.remove(fname)
         self.close()
     def cancel(self):
