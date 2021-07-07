@@ -8,6 +8,7 @@ import logging
 import itertools
 import random
 import numpy as np
+import re
 
 DEFAULT_QUEUE_LOCATION = 'queue.json'
 
@@ -121,3 +122,16 @@ def upload_queue_to_s3(fname, bucket='active-matter-simulations', folder = 'queu
     uid = str(uuid.uuid4())
     upload_generic_to_s3(bucket, folder, uid+'.json', file_name_local=fname)
     return uid
+
+def is_valid_slurm_time(t):
+    ## Acceptable time formats include "minutes", "minutes:seconds", "hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds"
+    ## (https://slurm.schedmd.com/sbatch.html)
+    re_list = [
+            r"^\d+$"                   , # "minutes"
+            r"^\d+:\d{2}$"             , # "minutes:seconds"
+            r"^\d+:\d{2}:\d{2}$"       , # "hours:minutes:seconds"
+            r"^\d+-\d{2}$"             , # "days-hours"
+            r"^\d+-\d{2}:\d{2}$"       , # "days-hours:minutes"
+            r"^\d+-\d{2}:\d{2}:\d{2}$" , # "days-hours:minutes:seconds"
+            ]
+    return any([bool(re.match(r, t)) for r in re_list])
