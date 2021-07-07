@@ -58,7 +58,9 @@ class run_simulation_window(QtWidgets.QDialog):
 
         ssh = SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        for i in range(3): ## do a number of retries
+        successful_login=False
+        ATTEMPTS = 3
+        for i in range(ATTEMPTS): ## do a number of retries
             try:
                 (user, password, mfa), res = cluster_login_form.get_credentials()
                 if not res:
@@ -67,9 +69,13 @@ class run_simulation_window(QtWidgets.QDialog):
                 #ssh.connect('localhost', port=22, username=user, password=password)
                 ssh.duo_auth = True
                 ssh.connect('login.hpc.caltech.edu', port=22, username=user, password=password)
+                successful_login = True
                 break
             except paramiko.AuthenticationException:
                 print("Authentication didn't work! Retry")
+        if not successful_login:
+            QtWidgets.QMessageBox.information(self, "Error!", f"Entered {ATTEMPTS} times the wrong login information. Aborting...", QtWidgets.QMessageBox.Ok)
+            self.close()
 
         ## Assure that we have the scratch link on the cluster ready for us to work with
         remote_file_path = '~/scratch/'
