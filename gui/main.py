@@ -57,7 +57,13 @@ class main_window(QtWidgets.QMainWindow):
         # Open simulation tree
         self.actionOpen.setShortcut('Ctrl+O')
 
-        self.load_file("tmp.simtree")
+        load_file_candidate = sys.argv[-1]
+        if len(sys.argv) > 1 and (load_file_candidate.endswith('.json') or load_file_candidate.endswith('.simtree')):
+            self.load_file(load_file_candidate)
+        else:
+            self.load_simulations()
+
+
 
     def set_unsaved_changes(self, flag=True):
         if flag:
