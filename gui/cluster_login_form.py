@@ -9,6 +9,9 @@ import subprocess
 import time
 import pexpect
 import tempfile
+from IAMS.ssh_client import SSHClient, upload_directory
+import paramiko
+
 
 class cluster_login_form(QtWidgets.QDialog):
     def __init__(self, parent=None):
@@ -37,16 +40,13 @@ class cluster_login_form(QtWidgets.QDialog):
         self.accepted = True
         self.close()
 
-from IAMS.ssh_client import SSHClient, upload_directory
-import paramiko
-#Main Entry Point
+
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     ssh = SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    i=0
     for i in range(3):
         try:
             (user, password, mfa), res = cluster_login_form.get_credentials()
@@ -55,19 +55,19 @@ if __name__ == "__main__":
             ssh.totp = mfa
             #ssh.connect('localhost', port=22, username=user, password=password)
             ssh.duo_auth = True
-            ssh.connect('login.hpc.caltech.edu', port=22, username=user, password=password)
+            ssh.connect("login.hpc.caltech.edu", port=22, username=user, password=password)
             break
         except paramiko.AuthenticationException:
             print("Authentication didn't work! Retry")
     #upload_directory('./mv-folder', '/tmp/tmp/', ssh)
     cmds = [
-            'ls -lh ~/',
-            ]
+        "ls -lh ~/",
+    ]
     for cmd in cmds:
         stdin, stdout, stderr = ssh.exec_command(cmd)
         output = stdout.readlines()
-        print('> '+cmd)
-        print(''.join(output))
-        print('\n')
+        print("> " + cmd)
+        print("".join(output))
+        print("\n")
 
     ssh.close()
