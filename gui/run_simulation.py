@@ -4,7 +4,7 @@ from PyQt5 import Qt, QtGui, QtWidgets, uic
 import sys
 import os
 import time
-from multiprocessing import Process
+import multiprocessing
 import IAMS.helper as h
 import json
 from sim_tree import *
@@ -28,8 +28,16 @@ class run_simulation_window(QtWidgets.QDialog):
         self.sim_list = sims.flattened_simulations()
         self.exec()
     def run_local(self):
-        nthreads=4 ## or do a change in how the run file looks ## TODO make up a settings file, store stuff like cluster user name and ncores in there
-        p = Process(target=_execute_local, args=(self.sim_list, nthreads))
+        nthreads=self.findChild(QtWidgets.QLineEdit,"input_local_workers").text()
+        try:
+            nthreads=int(nthreads)
+        except ValueError:
+            QtWidgets.QMessageBox.information(self, "Error!", f"Cannot understand {nthreads} as a number of workers. Has to be an integer!", QtWidgets.QMessageBox.Ok)
+            return
+        if nthreads<=0:
+            QtWidgets.QMessageBox.information(self, "Error!", f"Number of workers has to be positive", QtWidgets.QMessageBox.Ok)
+            return
+        p = multiprocessing.Process(target=_execute_local, args=(self.sim_list, nthreads))
         p.start()
         p.join()
         QtWidgets.QMessageBox.information(self, "Started simulations", f"Successfully started local simulations with {nthreads} threads.", QtWidgets.QMessageBox.Ok)
