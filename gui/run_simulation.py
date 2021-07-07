@@ -10,8 +10,9 @@ import json
 from sim_tree import *
 import paramiko
 from IAMS.ssh_client import SSHClient, upload_directory, create_scratch_link
-from IAMS.runners.SpringBoxRunner import run_all_dask_local, generate_cluster_submission
+from IAMS.runners.SpringBoxRunner import run_all_dask_local, generate_cluster_submission, upload_and_run_on_AWS
 from cluster_login_form import cluster_login_form
+import uuid
 
 def _execute_local(sim_list, nthreads):
     sys.stdout = open(os.devnull, 'w')
@@ -100,8 +101,10 @@ class run_simulation_window(QtWidgets.QDialog):
         self.close()
 
     def run_aws(self):
-        print('aws')
+        fname = str(uuid.uuid4())+'.json'
+        write_queued_experiments(self.sim_list, fname)
+        upload_and_run_on_AWS(fname)
+        os.remove(fname)
         self.close()
     def cancel(self):
-        print('cancel')
         self.close()
