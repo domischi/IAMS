@@ -170,8 +170,12 @@ class sim_tree_node:
         for c in self.children:
             c.remove_sim_by_name(name)
 
-    @staticmethod
-    def get_full_name_hint_from_dict(d):
+    def get_all_names(self):
+        ret = [self.name]
+        ret.extend([c.get_all_names() for c in self.children])
+        return ret
+    
+    def get_full_name_hint_from_dict(self, d):
         assert isinstance(d, dict)
         s = ""
         for k, v in d.items():
@@ -181,14 +185,17 @@ class sim_tree_node:
             if isinstance(v, dict) and v.get("iterate_over", False):
                 min_val = min(v["value"])
                 max_val = max(v["value"])
-                s += f"{k} [{min_value}, {max_value}], "
-        return s[:-2]
+                s += f"{k} [{min_val}, {max_val}], "
+        s=s[:-2]
+        if s in (self.parent.get_all_names() if self.parent is not None else self.get_all_names()):
+            s+=' (new)'
+        return s
 
     def insert_at_name(self, name, new_sim):
         if name is None:  ## Handle insert on root level
             name = ""
         if name == self.name:
-            name_hint = sim_tree_node.get_full_name_hint_from_dict(new_sim)
+            name_hint = self.get_full_name_hint_from_dict(new_sim)
             new_tree = sim_tree_node(
                 new_sim,
                 parent=self.parent,
