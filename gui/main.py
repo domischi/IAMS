@@ -307,7 +307,7 @@ class main_window(QtWidgets.QMainWindow):
         self.update_sim_details()
 
     def add_simulations(self):
-        if self.selected_sim_name is None or self.selected_sim_name == "":
+        if self.selected_sim_name is None or self.selected_sim_name == "" or self.selected_sim_name == SIM_TREE_ROOT_NAME:
             data_now = DEFAULT_SIM_DICT
         else:
             data_now = self.sim_tree.get_data_by_name(

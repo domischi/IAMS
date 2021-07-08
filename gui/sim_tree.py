@@ -5,6 +5,7 @@ from pprint import pprint
 from PyQt5 import Qt, QtGui, QtWidgets, uic
 from IAMS.helper import write_queued_experiments
 
+SIM_TREE_ROOT_NAME = "Simulations"
 
 class sim_tree_node_PyQt(Qt.QStandardItem):
     def __init__(self, txt):
@@ -37,7 +38,7 @@ class sim_tree_node:
         else:
             self.name = self.nameHint
         if self.name == "":  ## Root list
-            self.name = "Simulations"
+            self.name = SIM_TREE_ROOT_NAME
 
         if list_or_dict is None:
             self.data = None
@@ -192,8 +193,16 @@ class sim_tree_node:
         return s
 
     def insert_at_name(self, name, new_sim):
-        if name is None:  ## Handle insert on root level
-            name = ""
+        if name is None or name == SIM_TREE_ROOT_NAME:  ## Handle insert on root level
+            new_tree = sim_tree_node(
+                new_sim,
+                parent=self.parent,
+                index=len(self.children) + 1,
+                nameHint=self.get_full_name_hint_from_dict(new_sim),
+            )
+            self.children.append(new_tree)
+            return new_tree.name
+
         if name == self.name:
             name_hint = self.get_full_name_hint_from_dict(new_sim)
             new_tree = sim_tree_node(
