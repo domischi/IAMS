@@ -39,6 +39,16 @@ class main_window(QtWidgets.QMainWindow):
         )
         self.simulation_list_tree_view.setHeaderHidden(True)
 
+        # Groups and their order to display simulation
+        self.sim_view_group_names = [
+            "Time Integration Parameters",
+            "Geometry Parameters",
+            "Particle Parameters",
+            "Interaction Parameters",
+            "Data Storage Parameters",
+            "Other Parameters",
+                ]
+
         self.last_saved_to = None
         self.selected_sim_name = None
         self.unsaved_changes = False
@@ -182,22 +192,96 @@ class main_window(QtWidgets.QMainWindow):
         )
         self.simulation_list_tree_view.setCurrentIndex(qmodelindex_of_sim)
 
+    ## Returns the Index corresponding to the correct group
+    def get_group_association(self, s):
+        ## Time parameters
+        if s in ['T', 'dt']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'time' in s.lower())
+        ## Geometry parameters
+        if s in ['L', 'window_velocity', 'vx', 'x_0_circ', 'activation_fn_type', 'activation_circle_radius', 'v_circ']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'geom' in s.lower())
+        ## Interaction parameters
+        if s in ['activation_decay_rate', 'spring_cutoff','spring_lower_cutoff', 'spring_k', 'spring_k_rep', 'spring_r0', 'LJ_cutoff', 'LJ_eps', 'LJ_r0']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'interaction' in s.lower())
+        ## Data storage parameters
+        if s in ['SAVEFIG', 'savefreq_fig', 'savefreq_data_dump']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'data' in s.lower())
+        ## Particles
+        if s in ['n_part', 'const_particle_density', 'particle_density', 'm_init']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'particle' in s.lower())
+
+        return -1 ## Get sorted into other
+
+    ## Construct the simulation view for the main window
+    def get_sim_view(self):
+        sim_data = self.sim_tree.get_data_by_name(self.selected_sim_name)
+
+        txt = "(No valid selection)"
+        if isinstance(sim_data, list):
+            qlabel = QtWidgets.QLabel("(Multiple experiments in this list, no clear common denominator)")
+            return [qlabel]
+        elif isinstance(sim_data, dict):
+            ## Get the big layout sorted
+            gbs = [QtWidgets.QGroupBox(n) for n in self.sim_view_group_names]
+            vertical_spacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding) 
+
+            ## Introduce the local layouts
+            layouts = [QtWidgets.QGridLayout() for _ in range(len(gbs))]
+            for gb, l in zip(gbs,layouts):
+                gb.setLayout(l)
+
+            ## Add items to the layouts
+            for k, v in sim_data.items():
+                if isinstance(v, dict) and v.get("iterate_over", False):
+                    key = QtWidgets.QLabel(str(k))
+                    val = QtWidgets.QLabel("Iterating over: "+str(v["value"]))
+                    font = QtGui.QFont()
+                    font.setBold(True)
+                    key.setFont(font)
+                    val.setFont(font)
+                else:
+                    key = QtWidgets.QLabel(str(k))
+                    val = QtWidgets.QLabel(str(v))
+                insert_group_index = self.get_group_association(k)
+                c = layouts[insert_group_index].rowCount()
+                layouts[insert_group_index].addWidget(key, c, 0)
+                layouts[insert_group_index].addWidget(val, c, 1)
+
+            return [*gbs, vertical_spacer]
+        else:
+            raise RuntimeWarning(f"Didn't understand {type(sim_data)} to display")
+            qlabel = QtWidgets.QLabel("(No valid selection)")
+            return [qlabel]
+
+
     def update_sim_details(self):
+        ## Update selected sim
         try:
             clicked_sim_name = self.simulation_list_tree_view.selectedIndexes()[0].data()
         except:
             print("Didn't find a clicked sim name, ignoring it")
             return
         self.selected_sim_name = clicked_sim_name
-        sim_data = self.sim_tree.get_data_by_name(clicked_sim_name)
-        txt = "(No valid selection)"
-        if isinstance(sim_data, list):
-            txt = "(Multiple experiments in this list, no clear common denominator)"
-        elif isinstance(sim_data, dict):
-            txt = pformat(sim_data)
-        else:
-            raise RuntimeWarning(f"Didn't understand {type(sim_data)} to display")
-        self.findChild(QtWidgets.QLabel, "SelectedSimInfo").setText(txt)
+
+        ## Get new widgets
+        widgets = self.get_sim_view()
+
+        ## Get the widgets that we want to address
+        sim_gb = self.findChild(QtWidgets.QGroupBox, "selected_sim_gb")
+        sim_view_layout = self.findChild(QtWidgets.QVBoxLayout, "sim_view_layout")
+
+        ## Clear out view
+        for i in reversed(range(sim_view_layout.count())): 
+            sim_view_layout.removeWidget(sim_view_layout.itemAt(i).widget())
+        
+        ## Add new widgets
+        for w in widgets:
+            if isinstance(w, QtWidgets.QSpacerItem):
+                sim_view_layout.addItem(w)
+            else:
+                sim_view_layout.addWidget(w)
+
+        #self.findChild(QtWidgets.QLabel, "SelectedSimInfo").setText(txt)
 
     def run_simulations(self):
         if self.unsaved_changes:
