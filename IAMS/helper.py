@@ -15,7 +15,7 @@ DEFAULT_QUEUE_LOCATION = 'queue.json'
 def contains_iterate_over(d):
     assert(type(d)==dict)
     for v in d.values():
-        if type(v) == dict and 'iterate_over' in d:
+        if isinstance(v, dict) and v.get('iterate_over', False):
             return True
     return False
 
@@ -32,13 +32,18 @@ def convert_iterate_over_to_nested_lists(l_in, PRESERVE_ORIGINAL=True):
                 if not 'iterate_over' in l_out[k]:
                     l_out[k] = l_out[k]['value']
         for k in l_out:
-            if type(l_out[k]) == dict and 'iterate_over' in l_out[k]:
-                l = []
-                for v in l_out[k]['value']:
+            if isinstance(l_out[k], dict) and 'iterate_over' in l_out[k]:
+                if l_out[k]['iterate_over']:
+                    l = []
+                    for v in l_out[k]['value']:
+                        sim = deepcopy(l_out)
+                        sim[k]=v
+                        l.append(sim)
+                    return convert_iterate_over_to_nested_lists(l) ## possibly have to still expand underlying lists
+                else:
                     sim = deepcopy(l_out)
-                    sim[k]=v
-                    l.append(sim)
-                return convert_iterate_over_to_nested_lists(l) ## possibly have to still expand underlying lists
+                    sim[k]=l_out[k]['value']
+                    return convert_iterate_over_to_nested_lists([sim]) ## possibly have to still expand underlying lists
         ## No more to expand, can return the original list
         return l_out
     else:
