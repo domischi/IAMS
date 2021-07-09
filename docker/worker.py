@@ -8,5 +8,5 @@ if __name__ == '__main__':
     uid = os.environ.get("queue-fname", "queue")
     queue_fname = uid+".json"
     download_queue_from_s3(uid, RESOURCE_FOLDER_DIR)
-    sim = get_ith_simulation(index)
+    sim = get_ith_simulation(index, queue_file_location=queue_fname)
     run_one(sim, do_local=False, do_S3=True, folder_modifier=str(date.today())+'-'+str(index))
