@@ -1,4 +1,5 @@
 import boto3
+import os
 import uuid
 import sacred
 from pprint import pprint
@@ -108,24 +109,50 @@ def random_selection_of_experiments(sims, max_number=None, fraction=None):
     max_number = min([max_number, len(sims)]) ## Can't do more than len of simulations
     return random.sample(sims, max_number)
 
-def download_generic_from_s3(bucket, folder, file_name, file_name_local = None):
+def download_generic_from_s3(bucket, folder, file_name, file_name_local = None, client=None):
     if file_name_local is None:
         file_name_local = file_name
+    if client is None:
+        client = boto3.client('s3')
+    print('\n'*5)
+    print(f'{folder}/{file_name}')
+    print('\n'*5)
+    client.download_file(bucket, f'{folder}/{file_name}', file_name_local)
+
+def download_queue_from_s3(uid, resource_folder_name, bucket='active-matter-simulations', folder = 'queue-files'):
     s3 = boto3.client('s3')
-    s3.download_file(bucket, f'{folder}/{file_name}', file_name_local)
+    ## Download queue file
+    download_generic_from_s3(bucket, folder, uid+'.json', client=s3)
+    ## Download the resources as well
+    # Make folder
+    os.makedirs(resource_folder_name)
+    # List all objects in the corresponding bucket/key
+    obj_list = [o['Key'] for o in s3.list_objects(Bucket=bucket, Prefix=f'{folder}/{uid}/')['Contents']]
+    # Download each of them
+    for o in obj_list:
+        fname = o.split('/')[-1]
+        download_generic_from_s3(bucket, folder=f'{folder}/{uid}', file_name = fname , file_name_local = f'{resource_folder_name}/{fname}', client=s3)
 
-def download_queue_from_s3(fname, bucket='active-matter-simulations', folder = 'queue-files'):
-    download_generic_from_s3(bucket, folder, fname)
 
-def upload_generic_to_s3(bucket, folder, file_name, file_name_local = None):
+def upload_generic_to_s3(bucket, folder, file_name, file_name_local = None, client=None):
     if file_name_local is None:
         file_name_local = file_name
-    s3 = boto3.client('s3')
-    s3.upload_file(file_name_local, bucket, f'{folder}/{file_name}')
+    if client is None:
+        client = boto3.client('s3')
+    client.upload_file(file_name_local, bucket, f'{folder}/{file_name}')
 
-def upload_queue_to_s3(fname, bucket='active-matter-simulations', folder = 'queue-files'):
+def upload_queue_to_s3(fname, resource_folder, bucket='active-matter-simulations', folder = 'queue-files'):
     uid = str(uuid.uuid4())
-    upload_generic_to_s3(bucket, folder, uid+'.json', file_name_local=fname)
+    ## Initialize once as we now have to upload a few files
+    s3 = boto3.client('s3')
+
+    ## Upload resources to S3
+    if os.path.exists(resource_folder):
+        for f in os.listdir(resource_folder):
+            if os.path.isfile(resource_folder+'/'+f):
+                upload_generic_to_s3(bucket, folder+f'/{uid}', f, file_name_local=f'{resource_folder}/{f}', client=s3)
+    ## Upload main queue file to S3
+    upload_generic_to_s3(bucket, folder, uid+'.json', file_name_local=fname, client=s3)
     return uid
 
 def is_valid_slurm_time(t):

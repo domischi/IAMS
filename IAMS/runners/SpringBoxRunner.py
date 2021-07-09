@@ -254,7 +254,7 @@ def upload_and_run_on_cluster(uid, username, run_on_scratch=True, scratch_loc = 
 
 def upload_and_run_on_AWS(queue_name):
     print('Upload queue to S3...', end='')
-    uid = upload_queue_to_s3(queue_name)
+    uid = upload_queue_to_s3(queue_name, RESOURCE_FOLDER_DIR)
     print('Done.')
 
     print(f'Submit job {uid}...', end='')
