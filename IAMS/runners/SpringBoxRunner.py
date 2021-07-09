@@ -1,4 +1,5 @@
 import os
+import shutil
 import datetime
 import uuid
 from copy import deepcopy
@@ -18,6 +19,8 @@ from dask.distributed import Client
 import uuid
 import boto3
 from ..helper import DEFAULT_QUEUE_LOCATION, write_queued_experiments, upload_queue_to_s3, get_number_of_queued_experiments
+
+RESOURCE_FOLDER_DIR = 'resources'
 
 ex = sacred.Experiment()
 ex.dependencies.add(sacred.dependencies.PackageDependency("SpringBox",SB.__version__))
@@ -105,7 +108,7 @@ def main(_config, _run):
             print(f"[{datetime.datetime.now()}] Run {_config.get('run_id', 0)}: Doing step {i+1: >6} of {N_steps}")
 
         sim_info = get_sim_info(sim_info, _config, i)
-        activation_fn = activation_fn_dispatcher(_config, sim_info['t'])
+        activation_fn = activation_fn_dispatcher(_config, sim_info['t'], experiment = ex)
         if sim_info.get('measure_one_timestep_correlator', False):
             pXs_old = deepcopy(pXs)
         pXs, pVs, acc, ms, fXs, fVs, M = integrate_one_timestep(pXs = pXs,
@@ -197,16 +200,29 @@ run_one(sim)
 """
 
 def generate_cluster_submission(list_of_sims, username, time):
+    ## Generate unique folder for submission
     uid = str(hex(hash(uuid.uuid4())))[2:]
     uid = f'SB-{uid}'
     slurm_str = get_slurm_script(username, time, len(list_of_sims))
     main_script = get_main_script_cluster()
     os.makedirs(uid)
+
+    ## Write Queue file
     write_queued_experiments(list_of_sims, queue_file_location = f'{uid}/queue.json')
+
+    ## Write submission file
     with open(f'{uid}/submit.sh', 'w') as f:
         f.write(slurm_str)
+
+    ## Write main runner file
     with open(f'{uid}/main.py', 'w') as f:
         f.write(main_script)
+
+    if os.path.exists(RESOURCE_FOLDER_DIR):
+        print(f'Found resources in {RESOURCE_FOLDER_DIR}, adding them...')
+        shutil.copytree(RESOURCE_FOLDER_DIR, f'{uid}/{RESOURCE_FOLDER_DIR}')
+    else:
+        print(f'Did not find any additional resources to be added to the cluster submission.')
     return uid
 
 def upload_and_run_on_cluster(uid, username, run_on_scratch=True, scratch_loc = '/central/scratch'):
