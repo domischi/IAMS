@@ -4,7 +4,6 @@ boto3
 dask
 distributed
 imageio
-json
 matplotlib
 mpi4py
 numba
