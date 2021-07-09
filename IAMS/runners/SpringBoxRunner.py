@@ -265,6 +265,6 @@ def upload_and_run_on_AWS(queue_name):
             arrayProperties = {'size':get_number_of_queued_experiments(queue_name)},
             jobQueue = 'iams',
             jobDefinition = 'iams',
-            containerOverrides = {'environment' : [{'name':'queue-fname' , 'value':uid+'.json'}]}
+            containerOverrides = {'environment' : [{'name':'queue-fname' , 'value':uid}]}
             )
     print('Done.')
