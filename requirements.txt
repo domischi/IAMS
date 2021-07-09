@@ -11,8 +11,6 @@ numpy
 paramiko
 pathlib
 pexpect
-pprint
 sacred
 scipy
 tqdm
-uuid
