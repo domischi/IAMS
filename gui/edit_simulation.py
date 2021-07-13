@@ -88,7 +88,8 @@ class edit_simulation_window(QtWidgets.QDialog):
             val = gl.itemAtPosition(i,3).widget().text()
             try:
                 val = eval(val)
-            except NameError: ## Understand val now as string because it cannot be evaluated as python code
+            except (NameError, SyntaxError): ## Understand val now as string because it cannot be evaluated as python code
+                print(f'Understand {key} as string, rather than as to be evaluated!')
                 val = str(val)
             iterate_over = gl.itemAtPosition(i,1).takeAt(0).widget().isChecked()
             if iterate_over and not hasattr(val, "__iter__"):
