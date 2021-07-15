@@ -1,3 +1,6 @@
 [submodule "projects/simulators/SpringBox"]
 	path = IAMS/simulators/SpringBox
 	url = https://github.com/domischi/SpringBox
+[submodule "IAMS/simulators/ANFDM"]
+	path = IAMS/simulators/ANFDM
+	url = https://github.com/ShaiShdk/Active_Network_FDM
