@@ -127,11 +127,15 @@ def download_queue_from_s3(uid, resource_folder_name, bucket='active-matter-simu
     # Make folder
     os.makedirs(resource_folder_name)
     # List all objects in the corresponding bucket/key
-    obj_list = [o['Key'] for o in s3.list_objects(Bucket=bucket, Prefix=f'{folder}/{uid}/')['Contents']]
-    # Download each of them
-    for o in obj_list:
-        fname = o.split('/')[-1]
-        download_generic_from_s3(bucket, folder=f'{folder}/{uid}', file_name = fname , file_name_local = f'{resource_folder_name}/{fname}', client=s3)
+    resp = s3.list_objects(Bucket=bucket, Prefix=f'{folder}/{uid}/')
+    if 'Contents' in resp:
+        obj_list = [o['Key'] for o in resp['Contents']]
+        # Download each of them
+        for o in obj_list:
+            fname = o.split('/')[-1]
+            download_generic_from_s3(bucket, folder=f'{folder}/{uid}', file_name = fname , file_name_local = f'{resource_folder_name}/{fname}', client=s3)
+    else:
+        print("No resources found, don't try to download it" )
 
 
 def upload_generic_to_s3(bucket, folder, file_name, file_name_local = None, client=None):
