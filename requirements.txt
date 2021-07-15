@@ -13,4 +13,5 @@ pathlib
 pexpect
 sacred
 scipy
+shapely
 tqdm
