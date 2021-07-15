@@ -4,7 +4,7 @@ import sacred
 import uuid
 import os
 import shutil
-from ..helper import write_queued_experiments 
+from ..helper import write_queued_experiments, upload_queue_to_s3, get_number_of_queued_experiments
 
 RESOURCE_FOLDER_DIR = 'resources'
 
