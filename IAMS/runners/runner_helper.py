@@ -67,7 +67,7 @@ def get_main_script_cluster(sim_type):
     if sim_type.lower() == 'SpringBox'.lower():
         run_one_line = "from IAMS.runners.SpringBoxRunner import run_one"
     elif sim_type.lower() == 'ANFDM'.lower():
-        run_one_line = "from IAMS.runners.ANFDM import run_one"
+        run_one_line = "from IAMS.runners.ANFDMRunner import run_one"
     else:
         raise RuntimeError(f"Unrecognized sim_type when calling get_main_script_cluster: {sim_type}")
     return f"""import os

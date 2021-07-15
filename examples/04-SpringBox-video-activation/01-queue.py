@@ -9,6 +9,8 @@ particle_density=100
 L=2
 sim_parameters = [
         {
+    'SIMULATION_TYPE' : {'value': 'Springbox'},
+
     ## Simulation parameters
     'savefreq_fig' :{'value': 1},
     'savefreq_data_dump' :{'value': 1},
