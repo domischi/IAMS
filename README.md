@@ -9,9 +9,9 @@ Coordinate all numerical experiments of the Thomson Lab into one framework. In p
 
 In order to install the project:
 - Clone the repo recursively:
-    `mkdir -p ~/src`
-    `cd ~/src`
-    `git clone --recurse-submodules https://github.com/domischi/IAMS.git`
+    - `mkdir -p ~/src`
+    - `cd ~/src`
+    - `git clone --recurse-submodules https://github.com/domischi/IAMS.git`
 - Add the path to the PYTHONPATH
     `echo 'export PYTHONPATH=$PYTHONPATH:$HOME/src/IAMS' >> ~/.bashrc `
 - Then reload your bash environment to reflect the changes
