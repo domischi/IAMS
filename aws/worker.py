@@ -15,4 +15,4 @@ if __name__ == '__main__':
         from IAMS.runners.ANFDMRunner import run_one
     else:
         raise RuneimeError(f"Unrecognized simuation_type: sim.get('SIMULATION_TYPE')...")
-    run_one(sim, do_local=False, do_S3=True, folder_modifier=str(date.today())+'-'+str(index))
+    run_one(sim, do_local=False, do_S3=True, folder_modifier=str(uid)+'-'+str(date.today())+'-'+str(index))
