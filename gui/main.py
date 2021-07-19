@@ -2,6 +2,7 @@ from pprint import pprint, pformat
 from PyQt5 import Qt, QtGui, QtWidgets, uic, QtCore
 import sys
 import IAMS.helper as h
+import IAMS.runners.runner_helper as rh
 import json
 from sim_tree import *
 from edit_simulation import edit_simulation_window
@@ -38,16 +39,6 @@ class main_window(QtWidgets.QMainWindow):
             QtWidgets.QTreeView, "SimulationTreeView"
         )
         self.simulation_list_tree_view.setHeaderHidden(True)
-
-        # Groups and their order to display simulation
-        self.sim_view_group_names = [
-            "Time Integration Parameters",
-            "Geometry Parameters",
-            "Particle Parameters",
-            "Interaction Parameters",
-            "Data Storage Parameters",
-            "Other Parameters",
-                ]
 
         self.last_saved_to = None
         self.selected_sim_name = None
@@ -174,6 +165,31 @@ class main_window(QtWidgets.QMainWindow):
                 f"Didn't understand filetype of {filename} to load into program..."
             )
 
+        self.SIM_TYPE = rh.get_simtype_from_simlist(self.sim_tree.flattened_simulations())
+        if self.SIM_TYPE.lower() == 'Springbox'.lower():
+            # Groups and their order to display simulation
+            self.sim_view_group_names = [
+                "Time Integration Parameters",
+                "Geometry Parameters",
+                "Particle Parameters",
+                "Interaction Parameters",
+                "Data Storage Parameters",
+                "Other Parameters",
+                    ]
+        elif self.SIM_TYPE.lower() == 'ANFDM'.lower():
+            # Groups and their order to display simulation
+            self.sim_view_group_names = [
+                "Time Integration Parameters",
+                "Geometry Parameters",
+                "Network Physics Parameters",
+                "Data Storage Parameters",
+                "Other Parameters",
+                    ]
+        else:
+            self.sim_view_group_names = [
+                "Other Parameters",
+                    ]
+
     def rebuild_sim_tree(self):
         tm = self.sim_tree.get_pyqt_tree_model()
         self.simulation_list_tree_view.setModel(tm)
@@ -194,6 +210,15 @@ class main_window(QtWidgets.QMainWindow):
 
     ## Returns the Index corresponding to the correct group
     def get_group_association(self, s):
+        if self.SIM_TYPE.lower()=='Springbox'.lower():
+            return self.get_group_association_springbox(s)
+        elif self.SIM_TYPE.lower()=='anfdm'.lower():
+            return self.get_group_association_anfdm(s)
+        else:
+            return self.get_group_association_generic(s)
+    def get_group_association_generic(self, s):
+        return -1 ## Get sorted into other
+    def get_group_association_springbox(self, s):
         ## Time parameters
         if s in ['T', 'dt']:
             return next(i for i, s in enumerate(self.sim_view_group_names) if 'time' in s.lower())
@@ -210,6 +235,20 @@ class main_window(QtWidgets.QMainWindow):
         if s in ['n_part', 'const_particle_density', 'particle_density', 'm_init']:
             return next(i for i, s in enumerate(self.sim_view_group_names) if 'particle' in s.lower())
 
+        return -1 ## Get sorted into other
+    def get_group_association_anfdm(self, s):
+        ## Time parameters
+        if s in ['T_tot', 'dt']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'time' in s.lower())
+        ## Geometry parameters
+        if s in ['Global_Geometry', 'AR_fr', 'AR_xy', 'UnitCell_Geo', 'lattice_dsrdr', 'lattice_shape', 'rounded', 'round_coeff']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'geom' in s.lower())
+        ## Network Physics Parameters,
+        if s in ['gamma', 'mass', 'illum_ratio', 'rhof', 'rhoi', 'rhoPower', 's0', 'tau_s']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'network' in s.lower())
+        ## Data storage parameters
+        if s in ['show_plots', 'plot_density_map', 'plot_full_positions', 'plot_velocity_map', 'plot_velocity_plot', 'dump_type', 'N_frame']:
+            return next(i for i, s in enumerate(self.sim_view_group_names) if 'data' in s.lower())
         return -1 ## Get sorted into other
 
     ## Construct the simulation view for the main window
