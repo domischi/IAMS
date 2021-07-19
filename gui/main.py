@@ -166,6 +166,7 @@ class main_window(QtWidgets.QMainWindow):
             )
 
         self.SIM_TYPE = rh.get_simtype_from_simlist(self.sim_tree.flattened_simulations())
+        self.findChild(QtWidgets.QGroupBox, "selected_sim_gb").setTitle(f"Selected {self.SIM_TYPE} Simulation")
         if self.SIM_TYPE.lower() == 'Springbox'.lower():
             # Groups and their order to display simulation
             self.sim_view_group_names = [
@@ -319,8 +320,6 @@ class main_window(QtWidgets.QMainWindow):
                 sim_view_layout.addItem(w)
             else:
                 sim_view_layout.addWidget(w)
-
-        #self.findChild(QtWidgets.QLabel, "SelectedSimInfo").setText(txt)
 
     def run_simulations(self):
         if self.unsaved_changes:
