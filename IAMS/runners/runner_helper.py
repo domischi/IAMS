@@ -36,6 +36,13 @@ def run_all_dask_local_from_run_one(run_one, sim_list, n_tasks, **kwargs):
         lazy_results.append(dask.delayed(run_one)(sim, **kwargs))
     dask.compute(*lazy_results)
 
+def get_simtype_from_simlist(sim_list):
+    simtypes = set(d['SIMULATION_TYPE'] for d in sim_list)
+    if len(simtypes)>1:
+        raise RuntimeError("Currently, mixed simulation types are not supported!")
+    return simtypes.pop()
+
+
 def get_slurm_script(user, time, num_sims, sim_type = "", user_email=None):
     if user_email is None:
         user_email = user+"@caltech.edu"

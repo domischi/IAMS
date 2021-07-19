@@ -10,10 +10,10 @@ import json
 from sim_tree import *
 import paramiko
 from IAMS.ssh_client import SSHClient, upload_directory, create_scratch_link
-from IAMS.runners.SpringBoxRunner import (
-    run_all_dask_local,
+from IAMS.runners.runner_helper import (
     generate_cluster_submission,
     upload_and_run_on_AWS,
+    get_simtype_from_simlist,
 )
 from cluster_login_form import cluster_login_form
 import uuid
@@ -24,7 +24,17 @@ def _execute_local(sim_list, nthreads):
     sys.stderr = open(os.devnull, "w")
     if os.fork() != 0:
         return
-    run_all_dask_local(sim_list, nthreads)
+    simtype = get_simtype_from_simlist(sim_list)
+    if simtype.lower() == "Springbox".lower():
+        from IAMS.runners.SpringBoxRunner import run_all_dask_local
+
+        run_all_dask_local(sim_list, nthreads)
+    elif simtype.lower() == "ANFDM".lower():
+        from IAMS.runners.ANFDMRunner import run_all_dask_local
+
+        run_all_dask_local(sim_list, nthreads)
+    else:
+        raise RuntimeError(f"Unrecognized simtype in _execute local: {simtype}")
 
 
 class run_simulation_window(QtWidgets.QDialog):
@@ -117,7 +127,8 @@ class run_simulation_window(QtWidgets.QDialog):
             remote_file_path = create_scratch_link(ssh)
 
         ## Generate files locally required for the simulation
-        u = generate_cluster_submission(self.sim_list, user, slurm_time)
+        simtype = get_simtype_from_simlist(self.sim_list)
+        u = generate_cluster_submission(simtype, self.sim_list, user, slurm_time)
 
         ## Upload all files (using tar locally, upload via sftp, untar on cluster)
         upload_directory(f"./{u}", remote_file_path, ssh)

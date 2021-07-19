@@ -1,0 +1,273 @@
+{
+    "parent": null,
+    "children": [
+        {
+            "parent": null,
+            "data": {
+                "AR_fr": 1.0,
+                "AR_xy": [
+                    1,
+                    0.5
+                ],
+                "Global_Geometry": {
+                    "iterate_over": true,
+                    "value": [
+                        "Hexagon",
+                        "Rectangle",
+                        "Triangle"
+                    ]
+                },
+                "N_frame": 25,
+                "SIMULATION_TYPE": "ANFDM",
+                "T_tot": 1000,
+                "UnitCell_Geo": "Square",
+                "dt": 0.1,
+                "dump_type": "json",
+                "gamma": 0.0,
+                "illum_ratio": 1,
+                "lattice_dsrdr": 0,
+                "lattice_shape": [
+                    50,
+                    50
+                ],
+                "mass": 10,
+                "plot_density_map": true,
+                "plot_full_positions": true,
+                "plot_velocity_map": true,
+                "plot_velocity_plot": false,
+                "rhoPower": 1,
+                "rhof": 1,
+                "rhoi": 0.5,
+                "round_coeff": 2,
+                "rounded": false,
+                "s0": 0.2,
+                "show_plots": false,
+                "tau_s": 1
+            },
+            "name": "1 Global_Geometry [Hexagon, Triangle]",
+            "is_multiple_simulations": true,
+            "children": [
+                {
+                    "parent": null,
+                    "data": {
+                        "AR_fr": 1.0,
+                        "AR_xy": [
+                            1,
+                            0.5
+                        ],
+                        "Global_Geometry": "Hexagon",
+                        "N_frame": 25,
+                        "SIMULATION_TYPE": "ANFDM",
+                        "T_tot": 1000,
+                        "UnitCell_Geo": "Square",
+                        "dt": 0.1,
+                        "dump_type": "json",
+                        "gamma": 0.0,
+                        "illum_ratio": 1,
+                        "lattice_dsrdr": 0,
+                        "lattice_shape": [
+                            50,
+                            50
+                        ],
+                        "mass": 10,
+                        "plot_density_map": true,
+                        "plot_full_positions": true,
+                        "plot_velocity_map": true,
+                        "plot_velocity_plot": false,
+                        "rhoPower": 1,
+                        "rhof": 1,
+                        "rhoi": 0.5,
+                        "round_coeff": 2,
+                        "rounded": false,
+                        "s0": 0.2,
+                        "show_plots": false,
+                        "tau_s": 1
+                    },
+                    "name": "1, Global_Geometry=Hexagon",
+                    "is_multiple_simulations": false,
+                    "children": [],
+                    "nameHint": "1, Global_Geometry=Hexagon"
+                },
+                {
+                    "parent": null,
+                    "data": {
+                        "AR_fr": 1.0,
+                        "AR_xy": [
+                            1,
+                            0.5
+                        ],
+                        "Global_Geometry": "Rectangle",
+                        "N_frame": 25,
+                        "SIMULATION_TYPE": "ANFDM",
+                        "T_tot": 1000,
+                        "UnitCell_Geo": "Square",
+                        "dt": 0.1,
+                        "dump_type": "json",
+                        "gamma": 0.0,
+                        "illum_ratio": 1,
+                        "lattice_dsrdr": 0,
+                        "lattice_shape": [
+                            50,
+                            50
+                        ],
+                        "mass": 10,
+                        "plot_density_map": true,
+                        "plot_full_positions": true,
+                        "plot_velocity_map": true,
+                        "plot_velocity_plot": false,
+                        "rhoPower": 1,
+                        "rhof": 1,
+                        "rhoi": 0.5,
+                        "round_coeff": 2,
+                        "rounded": false,
+                        "s0": 0.2,
+                        "show_plots": false,
+                        "tau_s": 1
+                    },
+                    "name": "1, Global_Geometry=Rectangle",
+                    "is_multiple_simulations": false,
+                    "children": [],
+                    "nameHint": "1, Global_Geometry=Rectangle"
+                },
+                {
+                    "parent": null,
+                    "data": {
+                        "AR_fr": 1.0,
+                        "AR_xy": [
+                            1,
+                            0.5
+                        ],
+                        "Global_Geometry": "Triangle",
+                        "N_frame": 25,
+                        "SIMULATION_TYPE": "ANFDM",
+                        "T_tot": 1000,
+                        "UnitCell_Geo": "Square",
+                        "dt": 0.1,
+                        "dump_type": "json",
+                        "gamma": 0.0,
+                        "illum_ratio": 1,
+                        "lattice_dsrdr": 0,
+                        "lattice_shape": [
+                            50,
+                            50
+                        ],
+                        "mass": 10,
+                        "plot_density_map": true,
+                        "plot_full_positions": true,
+                        "plot_velocity_map": true,
+                        "plot_velocity_plot": false,
+                        "rhoPower": 1,
+                        "rhof": 1,
+                        "rhoi": 0.5,
+                        "round_coeff": 2,
+                        "rounded": false,
+                        "s0": 0.2,
+                        "show_plots": false,
+                        "tau_s": 1
+                    },
+                    "name": "1, Global_Geometry=Triangle",
+                    "is_multiple_simulations": false,
+                    "children": [],
+                    "nameHint": "1, Global_Geometry=Triangle"
+                }
+            ],
+            "nameHint": "1"
+        }
+    ],
+    "nameHint": null,
+    "name": "Simulations",
+    "data": [
+        {
+            "AR_fr": {
+                "value": 1.0
+            },
+            "AR_xy": {
+                "value": [
+                    1,
+                    0.5
+                ]
+            },
+            "Global_Geometry": {
+                "iterate_over": true,
+                "value": [
+                    "Hexagon",
+                    "Rectangle",
+                    "Triangle"
+                ]
+            },
+            "N_frame": {
+                "value": 25
+            },
+            "SIMULATION_TYPE": {
+                "value": "ANFDM"
+            },
+            "T_tot": {
+                "value": 1000
+            },
+            "UnitCell_Geo": {
+                "value": "Square"
+            },
+            "dt": {
+                "value": 0.1
+            },
+            "dump_type": {
+                "value": "json"
+            },
+            "gamma": {
+                "value": 0.0
+            },
+            "illum_ratio": {
+                "value": 1
+            },
+            "lattice_dsrdr": {
+                "value": 0
+            },
+            "lattice_shape": {
+                "value": [
+                    50,
+                    50
+                ]
+            },
+            "mass": {
+                "value": 10
+            },
+            "plot_density_map": {
+                "value": true
+            },
+            "plot_full_positions": {
+                "value": true
+            },
+            "plot_velocity_map": {
+                "value": true
+            },
+            "plot_velocity_plot": {
+                "value": false
+            },
+            "rhoPower": {
+                "value": 1
+            },
+            "rhof": {
+                "value": 1
+            },
+            "rhoi": {
+                "value": 0.5
+            },
+            "round_coeff": {
+                "value": 2
+            },
+            "rounded": {
+                "value": false
+            },
+            "s0": {
+                "value": 0.2
+            },
+            "show_plots": {
+                "value": false
+            },
+            "tau_s": {
+                "value": 1
+            }
+        }
+    ],
+    "is_multiple_simulations": true
+}

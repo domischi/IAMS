@@ -1,0 +1,163 @@
+{
+    "parent": null,
+    "children": [
+        {
+            "parent": null,
+            "data": {
+                "L": 2,
+                "MAKE_VIDEO": true,
+                "SAVEFIG": true,
+                "T": 0.1,
+                "activation_circle_radius": 0.5,
+                "activation_decay_rate": {
+                    "iterate_over": true,
+                    "value": [
+                        0.0,
+                        Infinity
+                    ]
+                },
+                "activation_fn_type": "video",
+                "dt": 0.01,
+                "n_part": 1600,
+                "particle_density": 100,
+                "savefreq_data_dump": 1,
+                "savefreq_fig": 1,
+                "spring_cutoff": 2,
+                "activation_image_filepath": "resources/activation-*.png",
+                "SIMULATION_TYPE": "Springbox"
+            },
+            "name": "1 activation_decay_rate [0.0, inf]",
+            "is_multiple_simulations": true,
+            "children": [
+                {
+                    "parent": null,
+                    "data": {
+                        "L": 2,
+                        "MAKE_VIDEO": true,
+                        "SAVEFIG": true,
+                        "T": 0.1,
+                        "activation_circle_radius": 0.5,
+                        "activation_decay_rate": 0.0,
+                        "activation_fn_type": "video",
+                        "dt": 0.01,
+                        "n_part": 1600,
+                        "particle_density": 100,
+                        "savefreq_data_dump": 1,
+                        "savefreq_fig": 1,
+                        "spring_cutoff": 2,
+                        "activation_image_filepath": "resources/activation-*.png",
+                        "SIMULATION_TYPE": "Springbox"
+                    },
+                    "name": "1, activation_decay_rate=0.0",
+                    "is_multiple_simulations": false,
+                    "children": [],
+                    "nameHint": "1, activation_decay_rate=0.0"
+                },
+                {
+                    "parent": null,
+                    "data": {
+                        "L": 2,
+                        "MAKE_VIDEO": true,
+                        "SAVEFIG": true,
+                        "T": 0.1,
+                        "activation_circle_radius": 0.5,
+                        "activation_decay_rate": Infinity,
+                        "activation_fn_type": "video",
+                        "dt": 0.01,
+                        "n_part": 1600,
+                        "particle_density": 100,
+                        "savefreq_data_dump": 1,
+                        "savefreq_fig": 1,
+                        "spring_cutoff": 2,
+                        "activation_image_filepath": "resources/activation-*.png",
+                        "SIMULATION_TYPE": "Springbox"
+                    },
+                    "name": "1, activation_decay_rate=inf",
+                    "is_multiple_simulations": false,
+                    "children": [],
+                    "nameHint": "1, activation_decay_rate=inf"
+                }
+            ],
+            "nameHint": "1"
+        }
+    ],
+    "nameHint": null,
+    "name": "Simulations",
+    "data": [
+        {
+            "L": {
+                "value": 2
+            },
+            "MAKE_VIDEO": {
+                "value": true
+            },
+            "SAVEFIG": {
+                "value": false
+            },
+            "T": {
+                "value": 0.1
+            },
+            "activation_circle_radius": {
+                "value": 0.5
+            },
+            "activation_decay_rate": {
+                "iterate_over": true,
+                "value": [
+                    0.001,
+                    0.01,
+                    0.1,
+                    1.0,
+                    10.0,
+                    100.0,
+                    1000.0
+                ]
+            },
+            "activation_fn_type": {
+                "value": "moving-circle"
+            },
+            "const_particle_density": {
+                "value": true
+            },
+            "dt": {
+                "value": 0.01
+            },
+            "n_part": {
+                "value": 1600
+            },
+            "particle_density": {
+                "value": 100
+            },
+            "savefreq_data_dump": {
+                "value": 5
+            },
+            "savefreq_fig": {
+                "value": 5
+            },
+            "spring_cutoff": {
+                "value": 2
+            },
+            "v_circ": {
+                "value": [
+                    0.5,
+                    0.0
+                ]
+            },
+            "vx": {
+                "value": 0.5
+            },
+            "window_velocity": {
+                "value": [
+                    0.5,
+                    0
+                ]
+            },
+            "x_0_circ": {
+                "value": [
+                    0,
+                    0
+                ]
+            }
+        }
+    ],
+    "is_multiple_simulations": true
+}
